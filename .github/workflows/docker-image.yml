@@ -25,6 +25,12 @@ jobs:
         run: |
           docker save spotify-api:${{ env.TIMESTAMP }} -o spotify-api-${{ env.TIMESTAMP }}.tar
 
+      - name: Create a new Git tag
+        if: github.event_name == 'push'
+        run: |
+          git tag ${{ env.TIMESTAMP }}
+          git push origin ${{ env.TIMESTAMP }}
+
       - name: Create a new release on GitHub
         if: github.event_name == 'push'
         uses: softprops/action-gh-release@v1
