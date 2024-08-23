@@ -20,11 +20,6 @@ jobs:
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag spotify-api:${{ env.TIMESTAMP }}
 
-      - name: Save Docker image as tarball
-        if: github.event_name == 'push'
-        run: |
-          docker save spotify-api:${{ env.TIMESTAMP }} -o spotify-api-${{ env.TIMESTAMP }}.tar
-
       - name: Create a new Git tag
         if: github.event_name == 'push'
         run: |
@@ -39,14 +34,5 @@ jobs:
           tag_name: ${{ env.TIMESTAMP }}
           body: |
             Automatic release of the Docker image.
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Docker image to release
-        if: github.event_name == 'push'
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            spotify-api-${{ env.TIMESTAMP }}.tar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
