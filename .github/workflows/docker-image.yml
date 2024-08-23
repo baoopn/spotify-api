@@ -13,8 +13,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up timestamp
+        id: timestamp
+        run: echo "TIMESTAMP=$(date +%Y.%m.%d.%H%M%S)" >> $GITHUB_ENV
+
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag spotify-api:$(date +%Y%m%d%H%M%S)
+        run: docker build . --file Dockerfile --tag spotify-api:${{ env.TIMESTAMP }}
+
+      - name: Save Docker image as tarball
+        run: |
+          docker save spotify-api:${{ env.TIMESTAMP }} -o spotify-api-${{ env.TIMESTAMP }}.tar
 
       - name: Create a new release on GitHub
         if: github.event_name == 'push'
@@ -23,6 +31,15 @@ jobs:
           name: Release ${{ github.sha }}
           tag_name: v${{ github.run_number }}
           body: |
-            Automatic release of the latest Docker image.
+            Automatic release of the Docker image.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Docker image to release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            spotify-api-${{ env.TIMESTAMP }}.tar
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
