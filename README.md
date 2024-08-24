@@ -94,7 +94,12 @@ To serve a static webpage (HTML, CSS, JS) or a static build of a framework like 
 3. The server is already configured to serve static files from the `static` directory. When you navigate to `http://localhost:3000`, the static files will be served.
 
 ## Get Refresh Token
+
 Read the instructions for getting your Spotify's Refresh Token here [RefreshToken](RefreshToken.md)
+
+## Frontend
+
+For reference, visit my [spotify-now-playing-react](https://github.com/baoopn/spotify-now-playing-react) repository.
 
 ## License
 
