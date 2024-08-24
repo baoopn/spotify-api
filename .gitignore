@@ -84,3 +84,6 @@ public/
 
 # MacOS files
 .DS_Store
+
+# Static
+static/
