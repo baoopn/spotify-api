@@ -12,7 +12,7 @@ const { getNowPlaying, getRecentlyPlayed } = require('./handlers/getSpotify'); /
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3010;
+const port = process.env.PORT || 3000;
 const localhost = `http://localhost:${port}`;
 const REFERER = process.env.REFERER || localhost;
 const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || REFERER;
