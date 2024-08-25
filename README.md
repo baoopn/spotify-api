@@ -39,7 +39,7 @@ This project provides an Express.js server that interacts with the Spotify API t
    CLIENT_ID=your_spotify_client_id
    CLIENT_SECRET=your_spotify_client_secret
    REFRESH_TOKEN=your_spotify_refresh_token
-   PORT=3010
+   PORT=3000 # or any port
    REFERER=http://your-allowed-referer.com
    ALLOWED_ORIGIN=http://your-allowed-origin.com
    ```
