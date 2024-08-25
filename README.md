@@ -93,6 +93,12 @@ To serve a static webpage (HTML, CSS, JS) or a static build of a framework like 
 
 3. The server is already configured to serve static files from the `static` directory. When you navigate to `http://localhost:3000`, the static files will be served.
 
+## Docker
+
+To install Docker Engine, follow the instructions in the official Docker documentation: [Install Docker Engine](https://docs.docker.com/engine/install/)
+
+For more information and detailed documentation on Docker, visit the official Docker documentation: [Docker Documentation](https://docs.docker.com/)
+
 ## Get Refresh Token
 
 Read the instructions for getting your Spotify's Refresh Token here [RefreshToken](RefreshToken.md)
