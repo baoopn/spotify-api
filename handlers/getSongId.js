@@ -2,17 +2,17 @@ const axios = require('axios');
 
 const getSongId = async (req, res) => {
   try {
-    const { REACT_APP_SPOTIFY_CLIENT_ID, REACT_APP_SPOTIFY_CLIENT_SECRET, REACT_APP_SPOTIFY_REFRESH_TOKEN } = process.env;
+    const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN } = process.env;
 
     // Get access token from Spotify
     const tokenResponse = await axios.post('https://accounts.spotify.com/api/token', null, {
       params: {
         grant_type: 'refresh_token',
-        refresh_token: REACT_APP_SPOTIFY_REFRESH_TOKEN,
+        refresh_token: SPOTIFY_REFRESH_TOKEN,
       },
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic ' + Buffer.from(`${REACT_APP_SPOTIFY_CLIENT_ID}:${REACT_APP_SPOTIFY_CLIENT_SECRET}`).toString('base64'),
+        'Authorization': 'Basic ' + Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64'),
       },
     });
 

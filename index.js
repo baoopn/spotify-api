@@ -5,11 +5,10 @@ const cors = require('cors'); // Import cors for handling Cross-Origin Resource 
 const rateLimit = require('express-rate-limit'); // Import express-rate-limit for rate limiting
 const timeout = require('connect-timeout'); // Import connect-timeout for setting request timeout
 const getSongId = require('./handlers/getSongId'); // Import the getSongId function
-const getSpotifyTokens = require('./handlers/getTokens'); // Import the getSpotifyTokens function
 const { getNowPlaying, getRecentlyPlayed } = require('./handlers/getSpotify'); // Import the getNowPlaying and getRecentlyPlayed functions
 
-// Load environment variables from .env file
-dotenv.config();
+// Load environment variables from .env file (for development)
+// dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -31,12 +30,6 @@ const refererCheck = (req, res, next) => {
   }
 };
 
-// Endpoint to return Spotify tokens, protected by the refererCheck middleware
-// app.get('/tokens', refererCheck, (req, res) => {
-//   const tokens = getSpotifyTokens();
-//   res.json(tokens);
-// });
-
 // Rate limiting middleware for the /songid, /currently-playing, and /recently-played endpoints
 const apiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
@@ -45,7 +38,7 @@ const apiLimiter = rateLimit({
 });
 
 // Timeout middleware for the /songid, /currently-playing, and /recently-played endpoints
-const apiTimeout = timeout('10s'); // 10 seconds timeout
+const apiTimeout = timeout('4s'); // 4 seconds timeout
 
 // Apply CORS, rate limiting, and timeout to the /songid endpoint
 app.get('/songid', cors({ origin: ALLOWED_ORIGIN }), apiLimiter, apiTimeout, getSongId);
