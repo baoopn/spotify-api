@@ -38,7 +38,7 @@ const apiLimiter = rateLimit({
 });
 
 // Timeout middleware for the /songid, /currently-playing, and /recently-played endpoints
-const apiTimeout = timeout('4s'); // 4 seconds timeout
+const apiTimeout = timeout(4000); // 4 seconds timeout
 
 // Apply CORS, rate limiting, and timeout to the /songid endpoint
 app.get('/songid', cors({ origin: ALLOWED_ORIGIN }), apiLimiter, apiTimeout, getSongId);
@@ -48,9 +48,13 @@ app.get('/currently-playing', refererCheck, apiLimiter, apiTimeout, async (req, 
 // app.get('/currently-playing', cors({ origin: ALLOWED_ORIGIN }), apiLimiter, apiTimeout, async (req, res) => {
   try {
     const data = await getNowPlaying();
-    res.json(data);
+    if (!res.headersSent) {
+      res.json(data);
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (!res.headersSent) {
+      res.status(500).json({ error: error.message });
+    }
   }
 });
 
@@ -59,15 +63,30 @@ app.get('/recently-played', refererCheck, apiLimiter, apiTimeout, async (req, re
 // app.get('/recently-played', cors({ origin: ALLOWED_ORIGIN }), apiLimiter, apiTimeout, async (req, res) => {
   try {
     const data = await getRecentlyPlayed();
-    res.json(data);
+    if (!res.headersSent) {
+      res.json(data);
+    }
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (!res.headersSent) {
+      res.status(500).json({ error: error.message });
+    }
   }
 });
 
 // Handle all other requests and return 404.html
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '404', '404.html'));
+});
+
+// Custom error-handling middleware for timeout
+app.use((err, req, res, next) => {
+  if (err.timeout) {
+    if (!res.headersSent) {
+      res.status(503).json({ error: 'Service Unavailable: Request timed out' });
+    }
+  } else {
+    next(err);
+  }
 });
 
 app.listen(port, () => {
