@@ -22,7 +22,7 @@ async function getAccessToken() {
 
     return response.data.access_token;
   } catch (error) {
-    console.error('Error fetching access token:', error.response ? error.response.data : error.message);
+    console.error(`[${getCurrentTimestamp()}] Error fetching access token:`, error.response ? error.response.data : error.message);
     throw new Error('Failed to fetch access token');
   }
 }
@@ -54,7 +54,7 @@ async function getNowPlaying() {
       duration_ms,
     };
   } catch (error) {
-    console.error('Error fetching now playing:', error.response ? error.response.data : error.message);
+    console.error(`[${getCurrentTimestamp()}] Error fetching now playing:`, error.response ? error.response.data : error.message);
     throw new Error('Failed to fetch now playing');
   }
 }
@@ -78,7 +78,7 @@ async function getRecentlyPlayed() {
       title: track.track.name,
     }));
   } catch (error) {
-    console.error('Error fetching recently played:', error.response ? error.response.data : error.message);
+    console.error(`[${getCurrentTimestamp()}] Error fetching recently played:`, error.response ? error.response.data : error.message);
     throw new Error('Failed to fetch recently played');
   }
 }
