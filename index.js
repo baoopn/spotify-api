@@ -1,12 +1,13 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const path = require('path'); // Import the path module
-const moment = require('moment'); // Import the moment module
-const cors = require('cors'); // Import cors for handling Cross-Origin Resource Sharing
-const rateLimit = require('express-rate-limit'); // Import express-rate-limit for rate limiting
-const timeout = require('connect-timeout'); // Import connect-timeout for setting request timeout
-const getSongId = require('./handlers/getSongId'); // Import the getSongId function
-const { getNowPlaying, getRecentlyPlayed } = require('./handlers/getSpotify'); // Import the getNowPlaying and getRecentlyPlayed functions
+import express from 'express';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import moment from 'moment';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
+import timeout from 'connect-timeout';
+import getSongId from "./handlers/getSongId.js";
+import { getNowPlaying, getRecentlyPlayed } from './handlers/getSpotify.js';
 
 // Load environment variables from .env file (for development)
 // dotenv.config();
@@ -21,11 +22,14 @@ const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN ? process.env.ALLOWED_ORIGIN.s
 // Set trust proxy to a specific value (e.g., 'loopback' for localhost, or a specific IP address)
 app.set('trust proxy', 'loopback');
 
+// Convert import.meta.url to __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 // Serve static files from the /static directory
 app.use(express.static(path.join(__dirname, 'static')))
 
 // Helper function to get the current timestamp in a human-readable format
-function getCurrentTimestamp() {
+export function getCurrentTimestamp() {
   return moment().format('YYYY-MM-DD HH:mm:ss');
 }
 

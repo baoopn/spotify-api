@@ -1,11 +1,11 @@
-const axios = require('axios');
-const getSpotifyTokens = require('./getTokens');
+import axios from 'axios';
+import getSpotifyTokens from "./getTokens.js";
 
 const NOW_PLAYING_ENDPOINT = `https://api.spotify.com/v1/me/player/currently-playing`;
 const RECENTLY_PLAYED_ENDPOINT = `https://api.spotify.com/v1/me/player/recently-played?limit=5`;
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
 
-let recentlyPlayedcache = {
+let recentlyPlayedCache = {
   data: null,
   lastFetched: null,
 };
@@ -110,8 +110,8 @@ async function getRecentlyPlayed() {
   const now = Date.now();
 
   // Check if the cache is still valid
-  if (recentlyPlayedcache.data && recentlyPlayedcache.lastFetched + RECENTLY_PLAYED_CACHE_DURATION > now) {
-    return recentlyPlayedcache.data;
+  if (recentlyPlayedCache.data && recentlyPlayedCache.lastFetched + RECENTLY_PLAYED_CACHE_DURATION > now) {
+    return recentlyPlayedCache.data;
   }
 
   try {
@@ -132,7 +132,7 @@ async function getRecentlyPlayed() {
     }));
 
     // Update the cache
-    recentlyPlayedcache = {
+    recentlyPlayedCache = {
       data,
       lastFetched: now,
     };
@@ -144,4 +144,4 @@ async function getRecentlyPlayed() {
   }
 }
 
-module.exports = { getAccessToken, getNowPlaying, getRecentlyPlayed };
+export { getNowPlaying, getRecentlyPlayed, getAccessToken };
