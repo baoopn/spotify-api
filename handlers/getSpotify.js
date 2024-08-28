@@ -5,7 +5,33 @@ const NOW_PLAYING_ENDPOINT = `https://api.spotify.com/v1/me/player/currently-pla
 const RECENTLY_PLAYED_ENDPOINT = `https://api.spotify.com/v1/me/player/recently-played?limit=5`;
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
 
+let recentlyPlayedcache = {
+  data: null,
+  lastFetched: null,
+};
+
+let tokenCache = {
+  accessToken: null,
+  lastFetched: null,
+};
+
+let nowPlayingCache = {
+  data: null,
+  lastFetched: null,
+};
+
+const RECENTLY_PLAYED_CACHE_DURATION = 30 * 1000; // 30 seconds
+const TOKEN_CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+const NOW_PLAYING_CACHE_DURATION = 500; // 500 milliseconds
+
 async function getAccessToken() {
+  const now = Date.now();
+
+  // Check if the cache is still valid
+  if (tokenCache.accessToken && tokenCache.lastFetched + TOKEN_CACHE_DURATION > now) {
+    return tokenCache.accessToken;
+  }
+
   try {
     const { clientId, clientSecret, refreshToken } = getSpotifyTokens();
 
@@ -20,14 +46,28 @@ async function getAccessToken() {
       },
     });
 
-    return response.data.access_token;
+    const { access_token } = response.data;
+
+    // Update the cache
+    tokenCache = {
+      accessToken: access_token,
+      lastFetched: now,
+    };
+
+    return access_token;
   } catch (error) {
-    console.error(`[${getCurrentTimestamp()}] Error fetching access token:`, error.response ? error.response.data : error.message);
     throw new Error('Failed to fetch access token');
   }
 }
 
 async function getNowPlaying() {
+  const now = Date.now();
+
+  // Check if the cache is still valid
+  if (nowPlayingCache.data && nowPlayingCache.lastFetched + NOW_PLAYING_CACHE_DURATION > now) {
+    return nowPlayingCache.data;
+  }
+
   try {
     const accessToken = await getAccessToken();
 
@@ -44,7 +84,7 @@ async function getNowPlaying() {
     const { item, is_playing, progress_ms } = response.data;
     const { name: title, artists, album, external_urls, duration_ms } = item;
 
-    return {
+    const data = {
       albumImageUrl: album.images[0].url,
       artist: artists.map(artist => artist.name).join(', '),
       isPlaying: is_playing,
@@ -53,13 +93,27 @@ async function getNowPlaying() {
       progress_ms,
       duration_ms,
     };
+
+    // Update the cache
+    nowPlayingCache = {
+      data,
+      lastFetched: now,
+    };
+
+    return data;
   } catch (error) {
-    console.error(`[${getCurrentTimestamp()}] Error fetching now playing:`, error.response ? error.response.data : error.message);
     throw new Error('Failed to fetch now playing');
   }
 }
 
 async function getRecentlyPlayed() {
+  const now = Date.now();
+
+  // Check if the cache is still valid
+  if (recentlyPlayedcache.data && recentlyPlayedcache.lastFetched + RECENTLY_PLAYED_CACHE_DURATION > now) {
+    return recentlyPlayedcache.data;
+  }
+
   try {
     const accessToken = await getAccessToken();
 
@@ -69,16 +123,23 @@ async function getRecentlyPlayed() {
       },
     });
 
-    const data = response.data;
-    return data.items.map(track => ({
+    const data = response.data.items.map(track => ({
       albumImageUrl: track.track.album.images[0].url,
       artist: track.track.artists.map(artist => artist.name).join(", "),
       playedAt: track.played_at,
       songUrl: track.track.external_urls.spotify,
       title: track.track.name,
     }));
+
+    // Update the cache
+    recentlyPlayedcache = {
+      data,
+      lastFetched: now,
+    };
+
+    return data;
+
   } catch (error) {
-    console.error(`[${getCurrentTimestamp()}] Error fetching recently played:`, error.response ? error.response.data : error.message);
     throw new Error('Failed to fetch recently played');
   }
 }
