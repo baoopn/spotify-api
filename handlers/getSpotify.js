@@ -22,7 +22,7 @@ let nowPlayingCache = {
 
 const RECENTLY_PLAYED_CACHE_DURATION = 30 * 1000; // 30 seconds
 const TOKEN_CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
-const NOW_PLAYING_CACHE_DURATION = 500; // 500 milliseconds
+const NOW_PLAYING_CACHE_DURATION = 1000; // 1 second
 
 async function getAccessToken() {
   const now = Date.now();
