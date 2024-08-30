@@ -87,3 +87,6 @@ public/
 
 # Static
 static/
+
+# IntelliJ IDEA
+.idea

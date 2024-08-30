@@ -10,10 +10,6 @@ handle_error_not_exit() {
     echo "Error occurred in command: $1"
 }
 
-# Stop and remove the container
-sudo docker stop spotify-tokens-container || handle_error_not_exit "sudo docker stop spotify-tokens-container"
-sudo docker rm spotify-tokens-container || handle_error_not_exit "sudo docker rm spotify-tokens-container"
-
 # Rebuild and start the container
 sudo docker compose up -d --build || handle_error "sudo docker-compose up -d --build"
 

@@ -1,22 +1,23 @@
-const axios = require('axios');
+import axios from 'axios';
+import { getAccessToken } from './getSpotify.js';
+
+const CACHE_DURATION = 5 * 1000; // 5 seconds
+
+let songIdCache = {
+  data: null,
+  lastFetched: null,
+};
 
 const getSongId = async (req, res) => {
+  const now = Date.now();
+
+  // Check if the cache is still valid
+  if (songIdCache.data && songIdCache.lastFetched + CACHE_DURATION > now) {
+    return res.json(songIdCache.data);
+  }
+
   try {
-    const { SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, SPOTIFY_REFRESH_TOKEN } = process.env;
-
-    // Get access token from Spotify
-    const tokenResponse = await axios.post('https://accounts.spotify.com/api/token', null, {
-      params: {
-        grant_type: 'refresh_token',
-        refresh_token: SPOTIFY_REFRESH_TOKEN,
-      },
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Authorization': 'Basic ' + Buffer.from(`${SPOTIFY_CLIENT_ID}:${SPOTIFY_CLIENT_SECRET}`).toString('base64'),
-      },
-    });
-
-    const accessToken = tokenResponse.data.access_token;
+    const accessToken = await getAccessToken();
 
     // Get currently playing song from Spotify
     const songResponse = await axios.get('https://api.spotify.com/v1/me/player/currently-playing', {
@@ -25,13 +26,31 @@ const getSongId = async (req, res) => {
       },
     });
 
-    const songId = songResponse.data.item.id;
+    const song = songResponse.data.item;
 
-    res.json({ song_id: songId });
+    // Check if song exists in the response
+    if (!song) {
+      return res.json({ isPlaying: false });
+    }
+
+    const songId = song.id;
+    const songUrl = song.external_urls.spotify;
+    const title = song.name;
+    const artist = song.artists.map(artist => artist.name).join(', ');
+    const isPlaying = songResponse.data.is_playing;
+
+    const data = { isPlaying, song_id: songId, songUrl, title, artist };
+
+    // Update the cache
+    songIdCache = {
+      data,
+      lastFetched: now,
+    };
+
+    res.json(data);
   } catch (error) {
-    console.error('Error fetching currently playing song:', error);
     res.status(500).json({ error: 'Failed to fetch currently playing song' });
   }
 };
 
-module.exports = getSongId;
+export default getSongId;
