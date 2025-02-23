@@ -6,6 +6,7 @@ import moment from 'moment';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import timeout from 'connect-timeout';
+import { WebSocketServer } from 'ws';
 import getSongId from "./handlers/getSongId.js";
 import { getNowPlaying, getRecentlyPlayed } from './handlers/getSpotify.js';
 
@@ -104,6 +105,32 @@ app.use((err, req, res, next) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+const server = app.listen(port, () => {
+  console.log(`[${getCurrentTimestamp()}] Server is running on http://localhost:${port}`);
+});
+
+// WebSocket server
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+  console.log(`[${getCurrentTimestamp()}] Client connected to WebSocket. IP: ${ws._socket.remoteAddress}`);
+
+  ws.on('message', async (message) => {
+    try {
+      const parsedMessage = JSON.parse(message);
+      if (parsedMessage.type === 'get-currently-playing') {
+        const data = await getNowPlaying();
+        ws.send(JSON.stringify({ type: 'currently-playing', data }));
+      } else if (parsedMessage.type === 'get-recently-played') {
+        const data = await getRecentlyPlayed();
+        ws.send(JSON.stringify({ type: 'recently-played', data }));
+      }
+    } catch (error) {
+      console.error(`[${getCurrentTimestamp()}] WebSocket Error:`, error.message);
+    }
+  });
+
+  ws.on('close', () => {
+    console.log(`[${getCurrentTimestamp()}] Client disconnected`);
+  });
 });
