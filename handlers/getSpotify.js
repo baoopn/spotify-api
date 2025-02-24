@@ -82,7 +82,7 @@ async function getNowPlaying() {
     }
 
     const { item, is_playing, progress_ms } = response.data;
-    const { name: title, artists, album, external_urls, duration_ms } = item;
+    const { name: title, artists, album, external_urls, duration_ms, id } = item;
 
     const data = {
       albumImageUrl: album.images[0].url,
@@ -90,6 +90,7 @@ async function getNowPlaying() {
       isPlaying: is_playing,
       songUrl: external_urls.spotify,
       title,
+      id,
       progress_ms,
       duration_ms,
     };
