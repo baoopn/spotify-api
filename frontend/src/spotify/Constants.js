@@ -1,0 +1,5 @@
+const API_URL = process.env.REACT_APP_API_URL || "";
+const RECENTLY_PLAYED_ENDPOINT = `${API_URL}/recently-played`;
+const CURRENTLY_PLAYING_ENDPOINT = `${API_URL}/currently-playing`;
+
+export { API_URL, RECENTLY_PLAYED_ENDPOINT, CURRENTLY_PLAYING_ENDPOINT };
