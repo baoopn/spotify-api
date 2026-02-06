@@ -62,6 +62,11 @@ const apiLimiter = rateLimit({
 // Timeout middleware for the /songid, /currently-playing, and /recently-played endpoints
 const apiTimeout = timeout(3000); // 3 seconds timeout
 
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: getCurrentTimestamp() });
+});
+
 // Apply CORS, rate limiting, and timeout to the /songid endpoint
 app.get(
   "/songid",
