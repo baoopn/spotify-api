@@ -1,7 +1,7 @@
 services:
-  spotify-tokens:
-    container_name: spotify-tokens-container
-    image: spotify-tokens:v4.3  # You can update the version as needed
+  backend:
+    container_name: spotify-api-backend
+    image: spotify-api-backend:latest  # You can update the version as needed
     build:
       context: .
       dockerfile: Dockerfile
