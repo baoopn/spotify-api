@@ -1,6 +1,12 @@
 
 # Spotify Tokens API
 
+> [!NOTE]
+> **Successor:** [baoopn/spotify-tracker](https://github.com/baoopn/spotify-tracker) is a rewrite of this
+> API and the related workers in Go (gRPC, PostgreSQL, Redis). It records full listening history, enriches
+> tracks with audio features and genres, and includes a public now-playing page and an admin dashboard.
+> New features land there.
+
 This project provides an Express.js server that interacts with the Spotify API to fetch information about the currently playing track, recently played tracks, and song IDs. The use of an API server helps protect your secret tokens since frontend apps not built securely (e.g., with Create React App) may accidentally expose tokens in built JavaScript files. The server also serves a static webpage (HTML, CSS, JS) or a static build of a frontend framework (e.g., Create React App) at the root (`/`). It includes middleware for CORS, rate limiting, and request timeouts to ensure secure and efficient API usage.
 
 ## Features
